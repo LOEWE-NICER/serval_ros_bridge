@@ -1,0 +1,11 @@
+<library path="lib/libimage_to_serval_nodelet">
+
+  <class name="serval_ros_bridge/image_to_serval_nodelet"
+         type="serval_ros_bridge::ImageToServalNodelet"
+	 base_class_type="nodelet::Nodelet">
+    <description>
+      Serval image writer nodelet
+    </description>
+  </class>
+
+</library>
