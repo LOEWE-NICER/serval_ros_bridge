@@ -1,17 +1,44 @@
+//=================================================================================================
+// Copyright (c) 2015, Stefan Kohlbrecher, TU Darmstadt
+// All rights reserved.
+
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//     * Redistributions of source code must retain the above copyright
+//       notice, this list of conditions and the following disclaimer.
+//     * Redistributions in binary form must reproduce the above copyright
+//       notice, this list of conditions and the following disclaimer in the
+//       documentation and/or other materials provided with the distribution.
+//     * Neither the name of the Simulation, Systems Optimization and Robotics
+//       group, TU Darmstadt nor the names of its contributors may be used to
+//       endorse or promote products derived from this software without
+//       specific prior written permission.
+
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+// ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+// WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY
+// DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+// LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+// ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//=================================================================================================
+
 #include "image_to_serval/image_to_serval.h"
 
 namespace serval_ros_bridge{
 
 ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
-    //ros::NodeHandle n;
-    //ros::NodeHandle p_n("~");//private nh
     image_transport::ImageTransport it(n);
     image_transport::ImageTransport p_it(p_n);
 
     sub_ = it.subscribe("image", 1, &ImageToServal::imageCallback,this);
 
-    //sub_mapping_ = n.subscribe("thermal/mapping",1, &ImageToServal::mappingCallback,this);
+    trigger_subscriber_ = n.subscribe<topic_tools::ShapeShifter>("trigger_topic", 1, &ImageToServal::trigger_subscriber, this);
+    //scanSubscriber_ = node_.subscribe(p_scan_topic_, p_scan_subscriber_queue_size_, &HectorMappingRos::scanCallback, this);
 
 }
 
@@ -26,6 +53,11 @@ void ImageToServal::writeLatestImageToFile()
   }else{
     ROS_WARN_THROTTLE(10.0,"No latest image data, cannot write image!. This message is throttled.");
   }
+}
+
+void ImageToServal::trigger_subscriber(const boost::shared_ptr<const topic_tools::ShapeShifter>& message)
+{
+  this->writeLatestImageToFile();
 }
 
 
