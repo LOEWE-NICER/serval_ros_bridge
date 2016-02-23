@@ -2,8 +2,8 @@
 
 <launch>
 
-  <node pkg="hector_heat_detection" type="heat_detection" name="heat_detection" output="screen">
-    <remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> 
+  <node pkg="image_to_serval" type="image_to_serval_node" name="image_to_serval_node" output="screen">
+    <!--<remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> -->
   </node>
 
 </launch>
