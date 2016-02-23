@@ -9,7 +9,7 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
     image_transport::ImageTransport it(n);
     image_transport::ImageTransport p_it(p_n);
 
-    sub_ = it.subscribeCamera("image", 1, &ImageToServal::imageCallback,this);
+    sub_ = it.subscribe("image", 1, &ImageToServal::imageCallback,this);
 
     //sub_mapping_ = n.subscribe("thermal/mapping",1, &ImageToServal::mappingCallback,this);
 
@@ -17,25 +17,26 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
 ImageToServal::~ImageToServal(){}
 
+void ImageToServal::writeLatestImageToFile()
+{
+  if (last_img_.get()){
+    //Read image with cvbridge
+    cv_bridge::CvImageConstPtr cv_ptr;
+    cv_ptr = cv_bridge::toCvShare(last_img_);
+  }else{
+    ROS_WARN_THROTTLE(10.0,"No latest image data, cannot write image!. This message is throttled.");
+  }
+}
 
-void ImageToServal::imageCallback(const sensor_msgs::ImageConstPtr& img, const sensor_msgs::CameraInfoConstPtr& info){
 
+void ImageToServal::imageCallback(const sensor_msgs::ImageConstPtr& img){
 
-     //Read image with cvbridge
-     cv_bridge::CvImageConstPtr cv_ptr;
-     cv_ptr = cv_bridge::toCvShare(img, sensor_msgs::image_encodings::MONO8);
-     cv::Mat img_filtered(cv_ptr->image);
+  last_img_ = img;
 
 }
 
-}
 
 
-/*
-void ImageToServal::mappingCallback(const thermaleye_msgs::Mapping& mapping){
-   mapping_ = mapping;
-   mappingDefined_ = true;
-   ROS_INFO("Mapping received");
+
 }
-*/
 

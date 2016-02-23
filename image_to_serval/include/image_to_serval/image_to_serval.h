@@ -15,10 +15,13 @@ public:
     ImageToServal(ros::NodeHandle& nh_,ros::NodeHandle& pnh_);
     ~ImageToServal();
 private:
-    void imageCallback(const sensor_msgs::ImageConstPtr& img, const sensor_msgs::CameraInfoConstPtr& info);
+    void imageCallback(const sensor_msgs::ImageConstPtr& img);
     //void mappingCallback(const thermaleye_msgs::Mapping& mapping);
-    image_transport::CameraSubscriber sub_;
-    image_transport::CameraPublisher pub_detection_;
+
+    void writeLatestImageToFile();
+    image_transport::Subscriber sub_;
+
+    sensor_msgs::ImageConstPtr last_img_;
 };
 
 }
