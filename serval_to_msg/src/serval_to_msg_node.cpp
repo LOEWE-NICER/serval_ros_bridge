@@ -37,7 +37,7 @@ int main(int argc, char **argv)
 
   if (numExistingSubscribers == 0)
   {
-    std::cerr << "No subscribers found, exist" << std::endl;
+    std::cerr << "No subscribers found, quit" << std::endl;
     return 1;
   }
 
