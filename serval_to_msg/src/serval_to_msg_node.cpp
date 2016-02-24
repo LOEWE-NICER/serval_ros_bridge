@@ -7,16 +7,8 @@
 #include "ros/time.h"
 #include "serval_msgs/NewServalFile.h"
 
-
-//#include "image_to_serval/image_to_serval.h"
-
-
 int main(int argc, char **argv)
 {
-
- // cv::namedWindow("Converted Image");
-
-  ros::init(argc, argv, "serval_to_msg");
 
   if (argc != 6)
   {
@@ -24,6 +16,8 @@ int main(int argc, char **argv)
 
     return 1;
   }
+
+  ros::init(argc, argv, "serval_to_msg");
 
   argc = 1;
   ros::init(argc, argv, "serval_to_msg");
@@ -56,11 +50,6 @@ int main(int argc, char **argv)
   nsf.authorSid = argv[5];
 
   pub.publish(nsf);
-
-//  std::ofstream myfile;
-//  myfile.open("/tmp/example.txt");
-//  myfile << argv[2];
-//  myfile.close();
 
   return 1;
 }
