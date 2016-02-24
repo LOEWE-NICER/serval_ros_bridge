@@ -17,8 +17,6 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  ros::init(argc, argv, "serval_to_msg");
-
   argc = 1;
   ros::init(argc, argv, "serval_to_msg");
   ros::NodeHandle nh_;
