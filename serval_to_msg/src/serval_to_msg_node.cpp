@@ -57,10 +57,10 @@ int main(int argc, char **argv)
 
   pub.publish(nsf);
 
-  std::ofstream myfile;
-  myfile.open("/tmp/example.txt");
-  myfile << argv[2];
-  myfile.close();
+//  std::ofstream myfile;
+//  myfile.open("/tmp/example.txt");
+//  myfile << argv[2];
+//  myfile.close();
 
   return 1;
 }
