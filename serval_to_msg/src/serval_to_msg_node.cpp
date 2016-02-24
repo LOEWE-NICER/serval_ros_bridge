@@ -1,5 +1,6 @@
 #include <chrono>
 #include <iostream>
+#include <fstream>
 #include <thread>
 
 #include "ros/ros.h"
@@ -56,7 +57,10 @@ int main(int argc, char **argv)
 
   pub.publish(nsf);
 
-//  std::cout << "New file published" << std::endl;
+  std::ofstream myfile;
+  myfile.open("/tmp/example.txt");
+  myfile << argv[2];
+  myfile.close();
 
   return 1;
 }
