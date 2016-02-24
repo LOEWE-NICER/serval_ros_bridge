@@ -6,6 +6,7 @@
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
+#include <topic_tools/shape_shifter.h>
 
 
 namespace serval_ros_bridge{
@@ -16,10 +17,13 @@ public:
     ~ImageToServal();
 private:
     void imageCallback(const sensor_msgs::ImageConstPtr& img);
+    void trigger_subscriber(const boost::shared_ptr<const topic_tools::ShapeShifter> &message);
+
     //void mappingCallback(const thermaleye_msgs::Mapping& mapping);
 
     void writeLatestImageToFile();
     image_transport::Subscriber sub_;
+    ros::Subscriber trigger_subscriber_;
 
     sensor_msgs::ImageConstPtr last_img_;
 };
