@@ -29,8 +29,8 @@
 #include "image_to_serval/image_to_serval.h"
 #include <opencv2/opencv.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/date_time/date_facet.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace serval_ros_bridge{
 
@@ -39,8 +39,13 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
     p_n.param("scripts_folder", p_script_folder_, std::string("UNSET"));
 
-    boost::gregorian::date_facet*  facet = new boost::gregorian::date_facet("%Y-%m-%d_%H:%M:%S%F%Q");
-    filename_ss_.imbue(std::locale(std::cout.getloc(), facet));
+    boost::posix_time::time_facet*  facet = new boost::posix_time::time_facet("%Y-%m-%d_%H:%M:%S%F%Q");
+    filename_ss_.imbue(std::locale(filename_ss_.getloc(), facet));
+
+    //const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
+    //filename_ss_ << boost_time;
+    //ROS_INFO("Debug %s", filename_ss_.str().c_str());
+
   
     image_transport::ImageTransport p_it(p_n);
 
