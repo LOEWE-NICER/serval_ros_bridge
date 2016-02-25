@@ -37,7 +37,7 @@ namespace serval_ros_bridge{
 ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
-    p_n.param("scripts_folder", p_script_folder_, std::string("UNSET"));
+    p_n.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     p_n.param("image_name", p_image_name_, std::string("default_image.jpg"));
     p_n.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H:%M:%S%F%Q"));
 
@@ -76,7 +76,7 @@ void ImageToServal::writeLatestImageToFile()
     const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
 
 
-    filename_ss_ << p_save_folder_ << "/" << boost_time;
+    filename_ss_ << p_save_folder_ << "_" << boost_time;
 
     boost::filesystem::path dir(filename_ss_.str());
 
@@ -87,6 +87,13 @@ void ImageToServal::writeLatestImageToFile()
     cv::imwrite(full_file_path_and_name, cv_ptr->image);
 
     ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
+
+    std::stringstream sys_command;
+
+    sys_command << p_scripts_folder_ << "/s_addfolder " << dir.generic_string();
+
+    ROS_INFO("Used system call: %s", sys_command.str().c_str());
+
     
     
   }else{
