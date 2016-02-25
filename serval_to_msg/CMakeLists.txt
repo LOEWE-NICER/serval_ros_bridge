@@ -38,7 +38,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package (
-  INCLUDE_DIRS include
+  #INCLUDE_DIRS include
   LIBRARIES serval_to_msg
   CATKIN_DEPENDS serval_msgs
   DEPENDS system_lib
@@ -51,7 +51,7 @@ catkin_package (
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-  include
+  #include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -60,7 +60,7 @@ add_executable(serval_to_msg_node src/serval_to_msg_node.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(ice_node ice_msgs_generate_messages_cpp)
+#add_dependencies(ice_node ice_msgs_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(serval_to_msg_node
