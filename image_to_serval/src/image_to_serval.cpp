@@ -29,6 +29,8 @@
 #include "image_to_serval/image_to_serval.h"
 #include <opencv2/opencv.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/date_time/date_facet.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace serval_ros_bridge{
 
@@ -36,6 +38,9 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
     p_n.param("scripts_folder", p_script_folder_, std::string("UNSET"));
+
+    boost::gregorian::date_facet*  facet = new boost::gregorian::date_facet("%Y-%m-%d_%H:%M:%S%F%Q");
+    filename_ss_.imbue(std::locale(std::cout.getloc(), facet));
   
     image_transport::ImageTransport p_it(p_n);
 
@@ -50,13 +55,23 @@ ImageToServal::~ImageToServal(){}
 void ImageToServal::writeLatestImageToFile()
 {
   if (last_img_.get()){
+
+    filename_ss_.str("");
+
     //Read image with cvbridge
     cv_bridge::CvImageConstPtr cv_ptr;
     cv_ptr = cv_bridge::toCvShare(last_img_);
 
     //boost::filesystem::path dir(p_save_folder_ + ros::Time::now().toBoost());
 
-    boost::filesystem::path dir(p_save_folder_ + "/serval_test");
+
+    //@TODO: This probably is not platform independent
+    const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
+
+
+    filename_ss_ << p_save_folder_ << "/" << boost_time;
+
+    boost::filesystem::path dir(filename_ss_.str());
 
     boost::filesystem::create_directory(dir);
 
