@@ -7,7 +7,7 @@
     <remap from="~/image" to="/openni/rgb/image_color" />
     <remap from="~/trigger_topic" to="/victimAnswer" />
     <param name="save_folder" value="/tmp"/>
-    <param name="scripts_folder" value="/home/hector/serval_scripts"/>
+    <param name="scripts_folder" value="/home/hector/serval_scripts/servald-helpers"/>
     <param name="image_name" value="image_color.jpg"/>
   </node>
 
