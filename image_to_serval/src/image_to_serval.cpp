@@ -92,6 +92,8 @@ void ImageToServal::writeLatestImageToFile()
 
     sys_command << p_scripts_folder_ << "/s_addfolder " << dir.generic_string();
 
+    system(sys_command.str().c_str());
+
     ROS_INFO("Used system call: %s", sys_command.str().c_str());
 
     
