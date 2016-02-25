@@ -30,7 +30,6 @@
 #include <opencv2/opencv.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
-//#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace serval_ros_bridge{
 
@@ -69,9 +68,6 @@ void ImageToServal::writeLatestImageToFile()
     cv_bridge::CvImageConstPtr cv_ptr;
     cv_ptr = cv_bridge::toCvShare(last_img_);
 
-    //boost::filesystem::path dir(p_save_folder_ + ros::Time::now().toBoost());
-
-
     //@TODO: This probably is not platform independent
     const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
 
@@ -92,11 +88,11 @@ void ImageToServal::writeLatestImageToFile()
 
     sys_command << p_scripts_folder_ << "/s_addfolder " << dir.generic_string();
 
-    system(sys_command.str().c_str());
-
-    ROS_INFO("Used system call: %s", sys_command.str().c_str());
-
-    
+    if (system(sys_command.str().c_str()) < 0){
+      ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
+    }else{
+      ROS_INFO("Successfully used system call: %s", sys_command.str().c_str());
+    }
     
   }else{
     ROS_WARN_THROTTLE(10.0,"No latest image data, cannot write image!. This message is throttled.");
