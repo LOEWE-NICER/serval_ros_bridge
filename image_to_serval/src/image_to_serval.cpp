@@ -27,18 +27,21 @@
 //=================================================================================================
 
 #include "image_to_serval/image_to_serval.h"
+#include <opencv2/opencv.hpp>
+#include <boost/filesystem.hpp>
 
 namespace serval_ros_bridge{
 
 ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
-    image_transport::ImageTransport it(n);
+    p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
+    p_n.param("script_folder", p_script_folder_, std::string("UNSET"));
+  
     image_transport::ImageTransport p_it(p_n);
 
-    sub_ = it.subscribe("image", 1, &ImageToServal::imageCallback,this);
+    sub_ = p_it.subscribe("image", 1, &ImageToServal::imageCallback,this);
 
-    trigger_subscriber_ = n.subscribe<topic_tools::ShapeShifter>("trigger_topic", 1, &ImageToServal::trigger_subscriber, this);
-    //scanSubscriber_ = node_.subscribe(p_scan_topic_, p_scan_subscriber_queue_size_, &HectorMappingRos::scanCallback, this);
+    trigger_subscriber_ = p_n.subscribe<topic_tools::ShapeShifter>("trigger_topic", 1, &ImageToServal::trigger_subscriber, this);
 
 }
 
@@ -50,6 +53,20 @@ void ImageToServal::writeLatestImageToFile()
     //Read image with cvbridge
     cv_bridge::CvImageConstPtr cv_ptr;
     cv_ptr = cv_bridge::toCvShare(last_img_);
+
+    //boost::filesystem::path dir(p_save_folder_ + ros::Time::now().toBoost());
+
+    boost::filesystem::path dir(p_save_folder_ + "/serval_test");
+
+    boost::filesystem::create_directory(dir);
+
+    std::string full_file_path_and_name = dir.generic_string() + "/test.jpg";
+
+    cv::imwrite(full_file_path_and_name, cv_ptr->image);
+
+    ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
+    
+    
   }else{
     ROS_WARN_THROTTLE(10.0,"No latest image data, cannot write image!. This message is throttled.");
   }
