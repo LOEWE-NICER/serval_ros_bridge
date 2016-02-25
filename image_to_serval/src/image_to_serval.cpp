@@ -76,7 +76,7 @@ void ImageToServal::writeLatestImageToFile()
     const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
 
 
-    filename_ss_ << p_save_folder_ << "_" << boost_time;
+    filename_ss_ << p_save_folder_ << "/" << boost_time;
 
     boost::filesystem::path dir(filename_ss_.str());
 
