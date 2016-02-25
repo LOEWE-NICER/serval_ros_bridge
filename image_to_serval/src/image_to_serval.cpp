@@ -38,8 +38,10 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
     p_n.param("scripts_folder", p_script_folder_, std::string("UNSET"));
+    p_n.param("image_name", p_image_name_, std::string("default_image.jpg"));
+    p_n.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H:%M:%S%F%Q"));
 
-    boost::posix_time::time_facet*  facet = new boost::posix_time::time_facet("%Y-%m-%d_%H:%M:%S%F%Q");
+    boost::posix_time::time_facet*  facet = new boost::posix_time::time_facet(p_format_string_.c_str());
     filename_ss_.imbue(std::locale(filename_ss_.getloc(), facet));
 
     //const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
@@ -80,7 +82,7 @@ void ImageToServal::writeLatestImageToFile()
 
     boost::filesystem::create_directory(dir);
 
-    std::string full_file_path_and_name = dir.generic_string() + "/test.jpg";
+    std::string full_file_path_and_name = dir.generic_string() + "/" + p_image_name_;
 
     cv::imwrite(full_file_path_and_name, cv_ptr->image);
 

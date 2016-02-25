@@ -29,6 +29,8 @@ private:
     
     std::string p_save_folder_;
     std::string p_script_folder_;
+    std::string p_image_name_;
+    std::string p_format_string_;
 
     std::stringstream filename_ss_;
 };
