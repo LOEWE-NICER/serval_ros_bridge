@@ -39,7 +39,7 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
     p_n.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     p_n.param("image_name", p_image_name_, std::string("default_image.jpg"));
-    p_n.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H:%M:%S%F%Q"));
+    p_n.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H-%M-%S%F%Q"));
 
     boost::posix_time::time_facet*  facet = new boost::posix_time::time_facet(p_format_string_.c_str());
     filename_ss_.imbue(std::locale(filename_ss_.getloc(), facet));
