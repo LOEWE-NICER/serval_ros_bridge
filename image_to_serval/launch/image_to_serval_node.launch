@@ -4,6 +4,10 @@
 
   <node pkg="image_to_serval" type="image_to_serval_node" name="image_to_serval_node" output="screen">
     <!--<remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> -->
+    <remap from="~/image" to="/openni/rgb/image_color" />
+    <remap from="~/trigger_topic" to="/victimAnswer" />
+    <param name="save_folder" value="/tmp"/>
+    <param name="scripts_folder" value="/home/hector/serval_scripts"/>
   </node>
 
 </launch>

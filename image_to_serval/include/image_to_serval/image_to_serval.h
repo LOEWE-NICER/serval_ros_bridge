@@ -26,6 +26,9 @@ private:
     ros::Subscriber trigger_subscriber_;
 
     sensor_msgs::ImageConstPtr last_img_;
+    
+    std::string p_save_folder_;
+    std::string p_script_folder_;
 };
 
 }

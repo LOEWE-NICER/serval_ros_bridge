@@ -35,7 +35,7 @@ namespace serval_ros_bridge{
 ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
-    p_n.param("script_folder", p_script_folder_, std::string("UNSET"));
+    p_n.param("scripts_folder", p_script_folder_, std::string("UNSET"));
   
     image_transport::ImageTransport p_it(p_n);
 
