@@ -16,7 +16,8 @@
   <node pkg="nodelet" type="nodelet"
     name="$(arg nodelet_manager_name)_serval_nodelet" 
     args="load serval_ros_bridge/image_to_serval_nodelet $(arg nodelet_manager_name)" 
-    output="screen">
+    output="screen"
+    respawn="true">
     <remap from="~/image" to="$(arg image_topic)" />    
     <remap from="~/trigger_topic" to="$(arg trigger_topic)" />
     <param name="save_folder" value="$(arg save_folder)"/>
