@@ -14,7 +14,7 @@
   <arg name="image_name" default="image_color" /> 
   
   <node pkg="nodelet" type="nodelet"
-    name="$(arg nodelet_manager_name)_serval_nodelet" 
+    name="$(arg image_name)_serval_nodelet" 
     args="load serval_ros_bridge/image_to_serval_nodelet $(arg nodelet_manager_name)" 
     output="screen"
     respawn="true">
