@@ -87,7 +87,7 @@ void ImageToServal::writeLatestImageToFile()
 
     std::stringstream sys_command;
     
-    sys_command << p_scripts_folder_ << p_add_script_executable_name_ << dir.generic_string();
+    sys_command << p_scripts_folder_ << p_add_script_executable_name_ << " " << dir.generic_string();
 
     if (system(sys_command.str().c_str()) < 0){
       ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());

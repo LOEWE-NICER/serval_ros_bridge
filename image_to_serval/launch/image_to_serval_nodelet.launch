@@ -12,7 +12,7 @@
   <arg name="trigger_topic" default="default" />   
   <arg name="save_folder" default="/tmp" />   
   <arg name="add_script_executable_name" default="/s_addallfiles " />
-  <arg name="scripts_folder" default="/home/taurob/serval/servald-helpers" />
+  <arg name="scripts_folder" default="/home/hector/serval_scripts/servald-helpers" />
   <arg name="image_name" default="image_color" /> 
   
   <node pkg="nodelet" type="nodelet"
