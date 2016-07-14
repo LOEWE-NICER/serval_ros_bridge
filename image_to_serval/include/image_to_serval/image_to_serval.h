@@ -28,6 +28,7 @@ private:
     sensor_msgs::ImageConstPtr last_img_;
     
     std::string p_save_folder_;
+    std::string p_add_script_executable_name_;
     std::string p_scripts_folder_;
     std::string p_image_name_;
     std::string p_format_string_;

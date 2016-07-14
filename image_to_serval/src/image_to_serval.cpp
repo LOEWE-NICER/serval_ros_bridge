@@ -37,6 +37,7 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
     p_n.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
+    p_n.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));    
     p_n.param("image_name", p_image_name_, std::string("default_image.jpg"));
     p_n.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H-%M-%S%F%Q"));
 
@@ -85,8 +86,8 @@ void ImageToServal::writeLatestImageToFile()
     ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
 
     std::stringstream sys_command;
-
-    sys_command << p_scripts_folder_ << "/s_addfolder " << dir.generic_string();
+    
+    sys_command << p_scripts_folder_ << p_add_script_executable_name_ << dir.generic_string();
 
     if (system(sys_command.str().c_str()) < 0){
       ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
