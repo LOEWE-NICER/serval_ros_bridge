@@ -39,6 +39,11 @@
 
 #include <hector_map_tools/HectorMapTools.h>
 
+#include <boost/filesystem.hpp>
+#include <boost/date_time/posix_time/posix_time_io.hpp>
+
+#include <opencv2/opencv.hpp>
+
 using namespace std;
 
 /**
@@ -51,12 +56,23 @@ public:
   MapAsImageProvider()
     : pn_("~")
   {
+    pn_.param("save_folder", p_save_folder_, std::string("UNSET"));
+    pn_.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
+    pn_.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));
+    pn_.param("map_name", p_map_name_, std::string("default_image.jpg"));
+    pn_.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H-%M-%S%F%Q"));
+
+    boost::posix_time::time_facet*  facet = new boost::posix_time::time_facet(p_format_string_.c_str());
+    filename_ss_.imbue(std::locale(filename_ss_.getloc(), facet));
+
+    latest_update_pose_.pose.position.x = std::numeric_limits<double>::max();
+    latest_update_pose_.pose.position.y = std::numeric_limits<double>::max();
 
     image_transport_ = new image_transport::ImageTransport(n_);
     image_transport_publisher_full_ = image_transport_->advertise("map_image/full", 1);
     image_transport_publisher_tile_ = image_transport_->advertise("map_image/tile", 1);
 
-    pose_sub_ = n_.subscribe("pose", 1, &MapAsImageProvider::poseCallback, this);
+    pose_sub_ = n_.subscribe("robot_pose", 1, &MapAsImageProvider::poseCallback, this);
     map_sub_ = n_.subscribe("map", 1, &MapAsImageProvider::mapCallback, this);
 
     //Which frame_id makes sense?
@@ -87,6 +103,20 @@ public:
   //The map->image conversion runs every time a new map is received at the moment
   void mapCallback(const nav_msgs::OccupancyGridConstPtr& map)
   {
+    if (!pose_ptr_)
+      return;
+
+    double diff_x = pose_ptr_->pose.position.x - latest_update_pose_.pose.position.x;
+    double diff_y = pose_ptr_->pose.position.y - latest_update_pose_.pose.position.y;
+
+
+
+    double update_dist_threshold = 1.0;
+
+    // Abort if we have not travelled further than threshold
+    if ((diff_x * diff_x + diff_y * diff_y) < update_dist_threshold)
+        return;
+
     int size_x = map->info.width;
     int size_y = map->info.height;
 
@@ -95,8 +125,25 @@ public:
       return;
     }
 
+
+    filename_ss_.str("");
+
+
+    //@TODO: This probably is not platform independent
+    const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
+
+
+    filename_ss_ << p_save_folder_ << "/" << boost_time;
+
+    boost::filesystem::path dir(filename_ss_.str());
+
+    boost::filesystem::create_directory(dir);
+
+    std::string full_file_path_and_name = dir.generic_string() + "/" + p_map_name_;
+
+
     // Only if someone is subscribed to it, do work and publish full map image
-    if (image_transport_publisher_full_.getNumSubscribers() > 0){
+    //if (image_transport_publisher_full_.getNumSubscribers() > 0){
       cv::Mat* map_mat  = &cv_img_full_.image;
 
       // resize cv image if it doesn't have the same dimensions as the map
@@ -136,10 +183,46 @@ public:
           }
         }
       }
-      image_transport_publisher_full_.publish(cv_img_full_.toImageMsg());
-    }
+      //image_transport_publisher_full_.publish(cv_img_full_.toImageMsg());
+
+      latest_update_pose_ = *pose_ptr_;
+
+      std::string mapimagedatafile = full_file_path_and_name + ".png";
+
+      ROS_INFO("Writing map occupancy data to %s", mapimagedatafile.c_str());
+      cv::imwrite(mapimagedatafile, cv_img_full_.image);
+
+
+      std::string mapmetadatafile = full_file_path_and_name + ".yaml";
+
+      ROS_INFO("Writing map occupancy data to %s", mapmetadatafile.c_str());
+           FILE* yaml = fopen(mapmetadatafile.c_str(), "w");
+
+      /*
+      geometry_msgs::Quaternion orientation = map->info.origin.orientation;
+      tf2::Matrix3x3 mat(tf2::Quaternion(
+             orientation.x,
+             orientation.y,
+             orientation.z,
+             orientation.w
+           ));
+      double yaw, pitch, roll;
+      mat.getEulerYPR(yaw, pitch, roll);
+      */
+
+      double yaw = 0.0;
+
+      fprintf(yaml, "image: %s\nresolution: %f\norigin: [%f, %f, %f]\nnegate: 0\noccupied_thresh: 0.65\nfree_thresh: 0.196\n\n",
+                   p_map_name_.c_str(), map->info.resolution, map->info.origin.position.x, map->info.origin.position.y, yaw);
+
+      fclose(yaml);
+
+      //ROS_INFO("Done\n");
+    
+    //}
 
     // Only if someone is subscribed to it, do work and publish tile-based map image Also check if pose_ptr_ is valid
+    /*
     if ((image_transport_publisher_tile_.getNumSubscribers() > 0) && (pose_ptr_)){
 
       world_map_transformer_.setTransforms(*map);
@@ -233,6 +316,7 @@ public:
       }
       image_transport_publisher_tile_.publish(cv_img_tile_.toImageMsg());
     }
+    */
   }
 
   ros::Subscriber map_sub_;
@@ -245,6 +329,8 @@ public:
 
   geometry_msgs::PoseStampedConstPtr pose_ptr_;
 
+  geometry_msgs::PoseStamped latest_update_pose_;
+
   cv_bridge::CvImage cv_img_full_;
   cv_bridge::CvImage cv_img_tile_;
 
@@ -255,6 +341,14 @@ public:
   int p_size_tiled_map_image_y_;
 
   HectorMapTools::CoordinateTransformer<float> world_map_transformer_;
+
+  std::string p_save_folder_;
+  std::string p_add_script_executable_name_;
+  std::string p_scripts_folder_;
+  std::string p_map_name_;
+  std::string p_format_string_;
+
+  std::stringstream filename_ss_;
 
 };
 
