@@ -59,6 +59,7 @@ public:
     pn_.param("save_folder", p_save_folder_, std::string("UNSET"));
     pn_.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     pn_.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));
+    pn_.param("agent_name", p_agent_name_, std::string("ugv001"));
     pn_.param("map_name", p_map_name_, std::string("default_image.jpg"));
     pn_.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H-%M-%S%F%Q"));
 
@@ -133,7 +134,10 @@ public:
     const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
 
 
-    filename_ss_ << p_save_folder_ << "/" << boost_time;
+    //filename_ss_ << p_save_folder_ << "/" << boost_time;
+
+    filename_ss_ << p_save_folder_ << "/" << p_agent_name_;
+
 
     boost::filesystem::path dir(filename_ss_.str());
 
@@ -147,17 +151,18 @@ public:
       cv::Mat* map_mat  = &cv_img_full_.image;
 
       // resize cv image if it doesn't have the same dimensions as the map
-      if ( (map_mat->rows != size_y) && (map_mat->cols != size_x)){
+      //if ( (map_mat->rows != size_y) && (map_mat->cols != size_x)){
         *map_mat = cv::Mat(size_y, size_x, CV_8U);
-      }
+      //}
 
       const std::vector<int8_t>& map_data (map->data);
 
       unsigned char *map_mat_data_p=(unsigned char*) map_mat->data;
 
       //We have to flip around the y axis, y for image starts at the top and y for map at the bottom
-      int size_y_rev = size_y-1;
+      //int size_y_rev = size_y-1;
 
+      /*
       for (int y = size_y_rev; y >= 0; --y){
 
         int idx_map_y = size_x * (size_y -y);
@@ -183,6 +188,21 @@ public:
           }
         }
       }
+      */
+
+      for(unsigned int y = 0; y < map->info.height; y++) {
+        for(unsigned int x = 0; x < map->info.width; x++) {
+          unsigned int i = x + (map->info.height - y - 1) * map->info.width;
+          if (map->data[i] == 0) { //occ [0,0.1)
+            map_mat_data_p[i] = 255;
+          } else if (map->data[i] == +100) { //occ (0.65,1]
+            map_mat_data_p[i] = 0;
+          } else { //occ [0.1,0.65]
+            map_mat_data_p[i] = 127;
+          }
+        }
+      }
+
       //image_transport_publisher_full_.publish(cv_img_full_.toImageMsg());
 
       latest_update_pose_ = *pose_ptr_;
@@ -346,6 +366,7 @@ public:
   std::string p_add_script_executable_name_;
   std::string p_scripts_folder_;
   std::string p_map_name_;
+  std::string p_agent_name_;
   std::string p_format_string_;
 
   std::stringstream filename_ss_;
