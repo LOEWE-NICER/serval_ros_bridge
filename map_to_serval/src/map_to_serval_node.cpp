@@ -203,7 +203,9 @@ public:
         }
       }
 
-      //image_transport_publisher_full_.publish(cv_img_full_.toImageMsg());
+      if (image_transport_publisher_full_.getNumSubscribers() > 0){
+        image_transport_publisher_full_.publish(cv_img_full_.toImageMsg());
+      }
 
       latest_update_pose_ = *pose_ptr_;
 
