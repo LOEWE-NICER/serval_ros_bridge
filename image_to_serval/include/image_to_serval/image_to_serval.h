@@ -31,9 +31,12 @@ private:
     std::string p_add_script_executable_name_;
     std::string p_scripts_folder_;
     std::string p_image_name_;
+    int p_rotate_image_;
     std::string p_format_string_;
 
     std::stringstream filename_ss_;
+
+    int rotate_flag_;
 };
 
 }

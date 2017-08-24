@@ -35,11 +35,25 @@ namespace serval_ros_bridge{
 
 ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
+    rotate_flag_ = -1;
+
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
     p_n.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     p_n.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));    
     p_n.param("image_name", p_image_name_, std::string("default_image.jpg"));
+    p_n.param("rotate_image_deg", p_rotate_image_, 0);
     p_n.param("format_string", p_format_string_, std::string("%Y-%m-%d_%H-%M-%S%F%Q"));
+
+
+    if (p_rotate_image_ != 0){
+      if (p_rotate_image_ == 90){
+        rotate_flag_ = cv::ROTATE_90_COUNTERCLOCKWISE;
+      }else if (p_rotate_image_ == -90){
+        rotate_flag_ = cv::ROTATE_90_CLOCKWISE;
+      }else {
+        ROS_ERROR("Rotation of %d degree not supported, not rotating images!", p_rotate_image_);
+      }
+    }
 
     boost::posix_time::time_facet*  facet = new boost::posix_time::time_facet(p_format_string_.c_str());
     filename_ss_.imbue(std::locale(filename_ss_.getloc(), facet));
@@ -66,8 +80,7 @@ void ImageToServal::writeLatestImageToFile()
     filename_ss_.str("");
 
     //Read image with cvbridge
-    cv_bridge::CvImageConstPtr cv_ptr;
-    cv_ptr = cv_bridge::toCvShare(last_img_);
+    cv_bridge::CvImageConstPtr cv_ptr = cv_bridge::toCvShare(last_img_);
 
     //@TODO: This probably is not platform independent
     const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
@@ -81,7 +94,13 @@ void ImageToServal::writeLatestImageToFile()
 
     std::string full_file_path_and_name = dir.generic_string() + "/" + p_image_name_;
 
-    cv::imwrite(full_file_path_and_name, cv_ptr->image);
+    if (rotate_flag_!= -1){
+      cv::Mat tmp;
+      cv::rotate(cv_ptr->image, tmp, rotate_flag_);
+      cv::imwrite(full_file_path_and_name, tmp);
+    }else{
+      cv::imwrite(full_file_path_and_name, cv_ptr->image);
+    }
 
     ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
 

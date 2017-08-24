@@ -68,10 +68,11 @@ public:
 
     latest_update_pose_.pose.position.x = std::numeric_limits<double>::max();
     latest_update_pose_.pose.position.y = std::numeric_limits<double>::max();
+    latest_update_time_ = ros::Time(0);
 
-    image_transport_ = new image_transport::ImageTransport(n_);
+    image_transport_ = new image_transport::ImageTransport(pn_);
     image_transport_publisher_full_ = image_transport_->advertise("map_image/full", 1);
-    image_transport_publisher_tile_ = image_transport_->advertise("map_image/tile", 1);
+    //image_transport_publisher_tile_ = image_transport_->advertise("map_image/tile", 1);
 
     pose_sub_ = n_.subscribe("robot_pose", 1, &MapAsImageProvider::poseCallback, this);
     map_sub_ = n_.subscribe("map", 1, &MapAsImageProvider::mapCallback, this);
@@ -80,8 +81,8 @@ public:
     cv_img_full_.header.frame_id = "map_image";
     cv_img_full_.encoding = sensor_msgs::image_encodings::MONO8;
 
-    cv_img_tile_.header.frame_id = "map_image";
-    cv_img_tile_.encoding = sensor_msgs::image_encodings::MONO8;
+    //cv_img_tile_.header.frame_id = "map_image";
+    //cv_img_tile_.encoding = sensor_msgs::image_encodings::MONO8;
 
     //Fixed cell width for tile based image, use dynamic_reconfigure for this later
     p_size_tiled_map_image_x_ = 64;
@@ -110,19 +111,24 @@ public:
     double diff_x = pose_ptr_->pose.position.x - latest_update_pose_.pose.position.x;
     double diff_y = pose_ptr_->pose.position.y - latest_update_pose_.pose.position.y;
 
-
+    ros::Time now = ros::Time::now();
 
     double update_dist_threshold = 1.0;
+    double update_time_threshold_seconds = 30.0;
+
+    double time_since_last_update_seconds = (now - latest_update_time_).toSec();
+
+    ROS_DEBUG ("Time %f", time_since_last_update_seconds);
 
     // Abort if we have not travelled further than threshold
-    if ((diff_x * diff_x + diff_y * diff_y) < update_dist_threshold)
+    if (((diff_x * diff_x + diff_y * diff_y) < update_dist_threshold) && !(time_since_last_update_seconds > update_time_threshold_seconds) )
         return;
 
     int size_x = map->info.width;
     int size_y = map->info.height;
 
     if ((size_x < 3) || (size_y < 3) ){
-      ROS_INFO("Map size is only x: %d,  y: %d . Not running map to image conversion", size_x, size_y);
+      ROS_WARN("Map size is only x: %d,  y: %d . Not running map to image conversion", size_x, size_y);
       return;
     }
 
@@ -208,6 +214,7 @@ public:
       }
 
       latest_update_pose_ = *pose_ptr_;
+      latest_update_time_ = now;
 
       std::string mapimagedatafile = full_file_path_and_name + ".png";
 
@@ -345,16 +352,17 @@ public:
   ros::Subscriber pose_sub_;
 
   image_transport::Publisher image_transport_publisher_full_;
-  image_transport::Publisher image_transport_publisher_tile_;
+  //image_transport::Publisher image_transport_publisher_tile_;
 
   image_transport::ImageTransport* image_transport_;
 
   geometry_msgs::PoseStampedConstPtr pose_ptr_;
 
   geometry_msgs::PoseStamped latest_update_pose_;
+  ros::Time latest_update_time_;
 
   cv_bridge::CvImage cv_img_full_;
-  cv_bridge::CvImage cv_img_tile_;
+  //cv_bridge::CvImage cv_img_tile_;
 
   ros::NodeHandle n_;
   ros::NodeHandle pn_;
