@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <include file="$(find serval_ros_launch)/launch/rosbridge_websocket.launch"/>
+  
+  <node pkg="map_to_serval" type="map_to_serval_node" name="map_to_serval_node" output="screen">
+    <!--<remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> -->
+    <!--<remap from="~/image" to="/openni/rgb/image_color" />-->
+
+    <param name="save_folder" value="/tmp"/>
+    <param name="scripts_folder" value="/home/hector/serval_scripts/servald-helpers"/>
+    <param name="map_name" value="map"/>
+  </node>
+  
+</launch>

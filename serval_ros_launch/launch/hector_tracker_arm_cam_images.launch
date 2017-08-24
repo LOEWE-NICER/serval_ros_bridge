@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <include file="$(find image_to_serval)/launch/image_to_serval_nodelet.launch">
+    <arg name="node_name" value="thermal_image_serval_nodelet_loader" />
+    <arg name="image_topic" value="/arm_thermal_cam/image_mapped" />
+    <arg name="image_name" value="image_thermal.png" /> 
+  </include>
+  
+  <include file="$(find image_to_serval)/launch/image_to_serval_nodelet.launch">
+    <arg name="node_name" value="arg_rgbd_rgb_image_serval_nodelet_loader" />
+    <arg name="image_topic" value="/arm_rgbd_cam/rgb/image_rect_color" />
+    <arg name="rotate_image_deg" value="-90" />
+    <arg name="image_name" value="image_color.png" /> 
+  </include>
+  
+  
+</launch>
