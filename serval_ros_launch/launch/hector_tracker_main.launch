@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
 <launch>
+    
+  <arg name="save_folder" default="/tmp" /> <!--/mnt/ssh/cloudlet09-->
+  <arg name="save_sub_folder" default="" /> <!--nicer_mobile_cloud_data-->   
 
   <include file="$(find serval_ros_launch)/launch/rosbridge_websocket.launch"/>
   
@@ -8,7 +11,8 @@
     <!--<remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> -->
     <!--<remap from="~/image" to="/openni/rgb/image_color" />-->
 
-    <param name="save_folder" value="/tmp"/>
+    <param name="save_folder" value="$(arg save_folder)"/>
+    <param name="save_sub_folder" value="$(arg save_sub_folder)"/>
     <param name="scripts_folder" value="/home/hector/serval_scripts/servald-helpers"/>
     <param name="map_name" value="map"/>
   </node>
