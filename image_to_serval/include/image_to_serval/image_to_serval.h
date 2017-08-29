@@ -3,6 +3,8 @@
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include <geometry_msgs/PoseStamped.h>
+
 #include <image_transport/image_transport.h>
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
@@ -19,15 +21,24 @@ private:
     void imageCallback(const sensor_msgs::ImageConstPtr& img);
     void trigger_subscriber(const boost::shared_ptr<const topic_tools::ShapeShifter> &message);
 
+    void poseCallback(const geometry_msgs::PoseStampedConstPtr& pose);
+
     //void mappingCallback(const thermaleye_msgs::Mapping& mapping);
 
     void writeLatestImageToFile();
     image_transport::Subscriber sub_;
     ros::Subscriber trigger_subscriber_;
 
+    ros::Subscriber pose_sub_;
+
+    ros::Publisher serval_update_pub_;
+
     sensor_msgs::ImageConstPtr last_img_;
+
+    geometry_msgs::PoseStampedConstPtr pose_ptr_;
     
     std::string p_save_folder_;
+    std::string p_save_sub_folder_;
     std::string p_add_script_executable_name_;
     std::string p_scripts_folder_;
     std::string p_image_name_;
@@ -37,6 +48,8 @@ private:
     std::stringstream filename_ss_;
 
     int rotate_flag_;
+
+    ros::NodeHandle n_;
 };
 
 }

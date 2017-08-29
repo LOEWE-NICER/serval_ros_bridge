@@ -10,7 +10,8 @@
   <arg name="nodelet_manager_name" default="arm_thermal_cam_nodelet_manager" />
   <arg name="image_topic" default="image" /> 
   <arg name="trigger_topic" default="default" />   
-  <arg name="save_folder" default="/tmp" />   
+  <arg name="save_folder" default="/tmp" />
+  <arg name="save_sub_folder" default="" />   
   <arg name="add_script_executable_name" default="/s_addallfiles " />
   <arg name="scripts_folder" default="/home/hector/serval_scripts/servald-helpers" />
   <arg name="image_name" default="image_color" />
@@ -24,6 +25,7 @@
     <remap from="~/image" to="$(arg image_topic)" />    
     <remap from="~/trigger_topic" to="$(arg trigger_topic)" />
     <param name="save_folder" value="$(arg save_folder)"/>
+    <param name="save_sub_folder" value="$(arg save_sub_folder)"/>
     <param name="add_script_executable_name" value="$(arg add_script_executable_name)" />
     <param name="scripts_folder" value="$(arg scripts_folder)"/>
     <param name="image_name" value="$(arg image_name)"/>

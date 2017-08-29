@@ -38,6 +38,7 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
     rotate_flag_ = -1;
 
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
+    p_n.param("save_sub_folder", p_save_sub_folder_, std::string(""));
     p_n.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     p_n.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));    
     p_n.param("image_name", p_image_name_, std::string("default_image.jpg"));
@@ -62,6 +63,9 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
     //filename_ss_ << boost_time;
     //ROS_INFO("Debug %s", filename_ss_.str().c_str());
 
+    pose_sub_ = n_.subscribe("robot_pose", 1, &ImageToServal::poseCallback, this);
+
+    serval_update_pub_ = n_.advertise<std_msgs::String>("/serval_update", 10, false);
   
     image_transport::ImageTransport p_it(p_n);
 
@@ -86,10 +90,21 @@ void ImageToServal::writeLatestImageToFile()
     const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
 
 
-    filename_ss_ << p_save_folder_ << "/" << boost_time;
 
-    boost::filesystem::path dir(filename_ss_.str());
+    filename_ss_  << p_save_sub_folder_;
 
+    ROS_DEBUG_STREAM(filename_ss_.str());
+
+    // Below creates the subfolder. Is non-op after it has been created once
+    boost::filesystem::path dir(p_save_folder_ + "/" + filename_ss_.str());
+    ROS_DEBUG_STREAM(dir.generic_string());
+    boost::filesystem::create_directory(dir);
+
+    // Below creates time-based subfolder.
+    filename_ss_  << "/" << boost_time;
+    ROS_DEBUG_STREAM(filename_ss_.str());
+    dir = boost::filesystem::path(p_save_folder_ + "/" + filename_ss_.str());
+    ROS_DEBUG_STREAM(dir.generic_string());
     boost::filesystem::create_directory(dir);
 
     std::string full_file_path_and_name = dir.generic_string() + "/" + p_image_name_;
@@ -104,15 +119,29 @@ void ImageToServal::writeLatestImageToFile()
 
     ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
 
-    std::stringstream sys_command;
+    //std::stringstream sys_command;
     
-    sys_command << p_scripts_folder_ << p_add_script_executable_name_ << " " << dir.generic_string();
+    //sys_command << p_scripts_folder_ << p_add_script_executable_name_ << " " << dir.generic_string();
 
-    if (system(sys_command.str().c_str()) < 0){
-      ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
+    //if (system(sys_command.str().c_str()) < 0){
+    //  ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
+    //}else{
+    //  ROS_INFO("Successfully used system call: %s", sys_command.str().c_str());
+    //}
+
+    std_msgs::String serval_update_str;
+    std::stringstream serval_update_ss;
+
+    serval_update_ss << "CREATE_FILE;" << filename_ss_.str() << ";filename=" << p_image_name_ << ";timestamp=" << last_img_->header.stamp.toSec(); // << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
+
+    if (pose_ptr_.get()){
+      serval_update_ss << ";pose_x=" << pose_ptr_->pose.position.x << ";pose_y=" << pose_ptr_->pose.position.y << ";pose_z=" << pose_ptr_->pose.position.z;
     }else{
-      ROS_INFO("Successfully used system call: %s", sys_command.str().c_str());
+      ROS_WARN("No pose data available, not adding to Serval metadata!");
     }
+    serval_update_str.data = serval_update_ss.str();
+
+    serval_update_pub_.publish(serval_update_str);
     
   }else{
     ROS_WARN_THROTTLE(10.0,"No latest image data, cannot write image!. This message is throttled.");
@@ -126,12 +155,14 @@ void ImageToServal::trigger_subscriber(const boost::shared_ptr<const topic_tools
 
 
 void ImageToServal::imageCallback(const sensor_msgs::ImageConstPtr& img){
-
   last_img_ = img;
-
 }
 
-
+//We assume the robot position is available as a PoseStamped here (querying tf would be the more general option)
+void ImageToServal::poseCallback(const geometry_msgs::PoseStampedConstPtr& pose)
+{
+  pose_ptr_ = pose;
+}
 
 
 }
