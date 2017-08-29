@@ -29,6 +29,8 @@
 #include "ros/ros.h"
 
 #include <nav_msgs/GetMap.h>
+#include <std_msgs/String.h>
+
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/image_encodings.h>
@@ -43,6 +45,9 @@
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
 #include <opencv2/opencv.hpp>
+
+#include <string>
+#include <sstream>
 
 using namespace std;
 
@@ -73,6 +78,8 @@ public:
     image_transport_ = new image_transport::ImageTransport(pn_);
     image_transport_publisher_full_ = image_transport_->advertise("map_image/full", 1);
     //image_transport_publisher_tile_ = image_transport_->advertise("map_image/tile", 1);
+
+    serval_update_pub_ = n_.advertise<std_msgs::String>("/serval_update", 10, false);
 
     pose_sub_ = n_.subscribe("robot_pose", 1, &MapAsImageProvider::poseCallback, this);
     map_sub_ = n_.subscribe("map", 1, &MapAsImageProvider::mapCallback, this);
@@ -246,6 +253,15 @@ public:
 
       fclose(yaml);
 
+
+      std_msgs::String serval_update_str;
+      std::stringstream serval_update_ss;
+
+      serval_update_ss << "UPDATE_FILE;" << dir.generic_string() << ";filename=" << p_map_name_ << ".png" << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
+      serval_update_str.data = serval_update_ss.str();
+
+      serval_update_pub_.publish(serval_update_str);
+
       //ROS_INFO("Done\n");
     
     //}
@@ -355,6 +371,8 @@ public:
   //image_transport::Publisher image_transport_publisher_tile_;
 
   image_transport::ImageTransport* image_transport_;
+
+  ros::Publisher serval_update_pub_;
 
   geometry_msgs::PoseStampedConstPtr pose_ptr_;
 
