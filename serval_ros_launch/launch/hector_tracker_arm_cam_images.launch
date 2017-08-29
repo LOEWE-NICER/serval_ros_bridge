@@ -7,6 +7,7 @@
   <arg name="agent_name" default="ugv001" />
 
   <include file="$(find image_to_serval)/launch/image_to_serval_nodelet.launch">
+    <arg name="nodelet_manager_name" value="/arm_thermal_cam_nodelet_manager" />  
     <arg name="node_name" value="thermal_image_serval_nodelet_loader" />
     <arg name="image_topic" value="/arm_thermal_cam/image_mapped" />
     <arg name="image_name" value="image_thermal.png" />
@@ -15,6 +16,7 @@
   </include>
   
   <include file="$(find image_to_serval)/launch/image_to_serval_nodelet.launch">
+    <arg name="nodelet_manager_name" value="/arm_rgbd_cam/arm_rgbd_cam_nodelet_manager" />  
     <arg name="node_name" value="arg_rgbd_rgb_image_serval_nodelet_loader" />
     <arg name="image_topic" value="/arm_rgbd_cam/rgb/image_rect_color" />
     <arg name="rotate_image_deg" value="-90" />
