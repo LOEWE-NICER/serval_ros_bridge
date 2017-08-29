@@ -28,13 +28,17 @@
     <param name="image_name" value="$(arg image_name)"/>
   </node> 
   -->
+    
+  <arg name="save_folder" default="/tmp" />
+  <arg name="agent_name" default="ugv001" />  
+    
   
   <node pkg="map_to_serval" type="map_to_serval_node" name="image_to_serval_node" output="screen">
     <!--<remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> -->
     <!--<remap from="~/image" to="/openni/rgb/image_color" />-->
-    <remap from="~/trigger_topic" to="/victimAnswer" />
-    <param name="save_folder" value="/tmp"/>
-    <param name="scripts_folder" value="/home/hector/serval_scripts/servald-helpers"/>
+    <!--<remap from="~/trigger_topic" to="/victimAnswer" />-->
+    <param name="save_folder" value="$(arg save_folder)"/>
+    <param name="agent_name" value="$(arg agent_name)"/>    
     <param name="map_name" value="map.png"/>
   </node>
 

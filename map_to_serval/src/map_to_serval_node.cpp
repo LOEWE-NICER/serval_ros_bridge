@@ -62,6 +62,7 @@ public:
     : pn_("~")
   {
     pn_.param("save_folder", p_save_folder_, std::string("UNSET"));
+    pn_.param("save_sub_folder", p_save_sub_folder_, std::string(""));
     pn_.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     pn_.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));
     pn_.param("agent_name", p_agent_name_, std::string("ugv001"));
@@ -144,17 +145,29 @@ public:
 
 
     //@TODO: This probably is not platform independent
-    const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
+    //const boost::posix_time::ptime boost_time = ros::Time::now().toBoost();
 
 
     //filename_ss_ << p_save_folder_ << "/" << boost_time;
 
-    filename_ss_ << p_save_folder_ << "/" << p_agent_name_;
+    filename_ss_ << p_save_sub_folder_;
 
 
-    boost::filesystem::path dir(filename_ss_.str());
-
+    // Below creates the subfolder. Is non-op after it has been created once
+    boost::filesystem::path dir(p_save_folder_ + "/" + filename_ss_.str());
+    ROS_DEBUG_STREAM(dir.generic_string());
     boost::filesystem::create_directory(dir);
+
+    // Below creates time-based subfolder.
+    filename_ss_   << "/" << p_agent_name_ << "_map";;
+    ROS_DEBUG_STREAM(filename_ss_.str());
+    dir = boost::filesystem::path(p_save_folder_ + "/" + filename_ss_.str());
+    ROS_DEBUG_STREAM(dir.generic_string());
+    boost::filesystem::create_directory(dir);
+
+
+    //boost::filesystem::path dir(filename_ss_.str());
+    //boost::filesystem::create_directory(dir);
 
     std::string full_file_path_and_name = dir.generic_string() + "/" + p_map_name_;
 
@@ -391,6 +404,7 @@ public:
   HectorMapTools::CoordinateTransformer<float> world_map_transformer_;
 
   std::string p_save_folder_;
+  std::string p_save_sub_folder_;
   std::string p_add_script_executable_name_;
   std::string p_scripts_folder_;
   std::string p_map_name_;

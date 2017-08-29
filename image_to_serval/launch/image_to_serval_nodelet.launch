@@ -9,9 +9,9 @@
   <arg name="node_name" default="serval_nodelet_loader" />
   <arg name="nodelet_manager_name" default="arm_thermal_cam_nodelet_manager" />
   <arg name="image_topic" default="image" /> 
-  <arg name="trigger_topic" default="default" />   
-  <arg name="save_folder" default="/tmp" />
-  <arg name="save_sub_folder" default="" />   
+  <arg name="trigger_topic" default="trigger_images" />   
+  <arg name="save_folder" default="/tmp" /> <!--/mnt/ssh/cloudlet09-->
+  <arg name="save_sub_folder" default="" /> <!--nicer_mobile_cloud_data-->   
   <arg name="add_script_executable_name" default="/s_addallfiles " />
   <arg name="scripts_folder" default="/home/hector/serval_scripts/servald-helpers" />
   <arg name="image_name" default="image_color" />

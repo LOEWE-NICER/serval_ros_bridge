@@ -2,11 +2,16 @@
 
 <launch>
 
+  <arg name="save_folder" default="/tmp" /> <!--/mnt/ssh/cloudlet09-->
+  <arg name="save_sub_folder" default="" /> <!--nicer_mobile_cloud_data-->  
+  <arg name="agent_name" default="ugv001" />
+
   <include file="$(find image_to_serval)/launch/image_to_serval_nodelet.launch">
     <arg name="node_name" value="thermal_image_serval_nodelet_loader" />
     <arg name="image_topic" value="/arm_thermal_cam/image_mapped" />
     <arg name="image_name" value="image_thermal.png" />
-    <arg name="save_sub_folder" value="ugv001_image_thermal" />
+    <arg name="save_folder" value="$(arg save_folder)"/>
+    <arg name="save_sub_folder" value="$(arg agent_name)_image_thermal" />
   </include>
   
   <include file="$(find image_to_serval)/launch/image_to_serval_nodelet.launch">
@@ -14,7 +19,8 @@
     <arg name="image_topic" value="/arm_rgbd_cam/rgb/image_rect_color" />
     <arg name="rotate_image_deg" value="-90" />
     <arg name="image_name" value="image_color.png" />
-    <arg name="save_sub_folder" value="ugv001_image_rgb" />
+    <arg name="save_folder" value="$(arg save_folder)"/>
+    <arg name="save_sub_folder" value="$(arg agent_name)_image_rgb" />
   </include>
   
   
