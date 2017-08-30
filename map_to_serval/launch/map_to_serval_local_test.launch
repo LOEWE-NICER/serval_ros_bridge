@@ -33,7 +33,7 @@
   <arg name="agent_name" default="ugv001" />  
     
   
-  <node pkg="map_to_serval" type="map_to_serval_node" name="image_to_serval_node" output="screen">
+  <node pkg="map_to_serval" type="map_to_serval_node" name="image_to_serval_node" output="screen" respawn="true">
     <!--<remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> -->
     <!--<remap from="~/image" to="/openni/rgb/image_color" />-->
     <!--<remap from="~/trigger_topic" to="/victimAnswer" />-->

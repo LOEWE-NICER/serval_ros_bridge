@@ -26,7 +26,7 @@ Also changed the default port.
   <arg name="params_glob" default="[*]" />
 
   <group if="$(arg ssl)">
-    <node name="rosbridge_websocket_onboard" pkg="rosbridge_server" type="rosbridge_websocket" output="screen">
+    <node name="rosbridge_websocket_onboard" pkg="rosbridge_server" type="rosbridge_websocket" output="screen" respawn="true">
       <param name="certfile" value="$(arg certfile)" />
       <param name="keyfile" value="$(arg keyfile)" />
       <param name="authenticate" value="$(arg authenticate)" />
@@ -43,7 +43,7 @@ Also changed the default port.
     </node>
   </group>
   <group unless="$(arg ssl)">
-    <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen">
+    <node name="rosbridge_websocket" pkg="rosbridge_server" type="rosbridge_websocket" output="screen" respawn="true">
       <param name="authenticate" value="$(arg authenticate)" />
       <param name="port" value="$(arg port)"/>
       <param name="address" value="$(arg address)"/>

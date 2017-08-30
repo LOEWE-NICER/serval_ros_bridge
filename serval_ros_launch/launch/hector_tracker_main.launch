@@ -7,7 +7,7 @@
 
   <include file="$(find serval_ros_launch)/launch/rosbridge_websocket.launch"/>
   
-  <node pkg="map_to_serval" type="map_to_serval_node" name="map_to_serval_node" output="screen">
+  <node pkg="map_to_serval" type="map_to_serval_node" name="map_to_serval_node" output="screen" respawn="true">
     <!--<remap from="thermal/image" to="/arm_thermal_cam/image_converted" /> -->
     <!--<remap from="~/image" to="/openni/rgb/image_color" />-->
 
