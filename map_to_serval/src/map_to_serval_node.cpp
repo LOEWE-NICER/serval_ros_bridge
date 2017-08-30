@@ -156,7 +156,12 @@ public:
     // Below creates the subfolder. Is non-op after it has been created once
     boost::filesystem::path dir(p_save_folder_ + "/" + filename_ss_.str());
     ROS_DEBUG_STREAM(dir.generic_string());
-    boost::filesystem::create_directory(dir);
+
+    boost::system::error_code error_code;
+    if (!boost::filesystem::create_directory(dir, error_code)){
+      ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing map.", dir.generic_string().c_str(), error_code.message().c_str());
+      return;
+    }
 
     // Below creates time-based subfolder.
     filename_ss_   << "/" << p_agent_name_ << "_map";;
@@ -164,7 +169,7 @@ public:
     dir = boost::filesystem::path(p_save_folder_ + "/" + filename_ss_.str());
     ROS_DEBUG_STREAM(dir.generic_string());
 
-    boost::system::error_code error_code;
+
     if (!boost::filesystem::create_directory(dir, error_code)){
       ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing map.", dir.generic_string().c_str(), error_code.message().c_str());
       return;
