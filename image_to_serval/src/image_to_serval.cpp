@@ -149,7 +149,7 @@ void ImageToServal::writeLatestImageToFile()
     std_msgs::String serval_update_str;
     std::stringstream serval_update_ss;
 
-    serval_update_ss << "CREATE_FILE;" << remote_full_file_path_and_name << ";filename=" << p_image_name_ << ";timestamp=" << last_img_->header.stamp.toSec(); // << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
+    serval_update_ss << "command=CREATE_FILE;path=" << remote_full_file_path_and_name << ";filename=" << p_image_name_ << ";timestamp=" << last_img_->header.stamp.toSec(); // << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
 
     if (pose_ptr_.get()){
       serval_update_ss << ";pose_x=" << pose_ptr_->pose.position.x << ";pose_y=" << pose_ptr_->pose.position.y << ";pose_z=" << pose_ptr_->pose.position.z;

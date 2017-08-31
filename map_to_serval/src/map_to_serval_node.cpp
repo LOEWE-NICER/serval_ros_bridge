@@ -289,7 +289,7 @@ public:
       std_msgs::String serval_update_str;
       std::stringstream serval_update_ss;
 
-      serval_update_ss << "UPDATE_FILE;" << remote_full_file_path_and_name << ";filename=" << p_map_name_ << ".png" << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
+      serval_update_ss << "command=UPDATE_FILE;path=" << remote_full_file_path_and_name << ";filename=" << p_map_name_ << ".png" << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
       serval_update_str.data = serval_update_ss.str();
 
       serval_update_pub_.publish(serval_update_str);
