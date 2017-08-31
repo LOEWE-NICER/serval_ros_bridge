@@ -17,4 +17,6 @@
     <param name="map_name" value="map"/>
   </node>
   
+  <node pkg="topic_tools" type="throttle" name="robot_pose_to_serval_throttle" args="messages /robot_pose 0.25 /robot_pose_throttled" /> 
+  
 </launch>
