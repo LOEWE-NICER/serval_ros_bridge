@@ -158,9 +158,13 @@ public:
     ROS_DEBUG_STREAM(dir.generic_string());
 
     boost::system::error_code error_code;
+
     if (!boost::filesystem::create_directory(dir, error_code)){
-      ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing map.", dir.generic_string().c_str(), error_code.message().c_str());
-      return;
+      // @TODO: Find a way to do this without ugly String comparison
+      if (error_code.message() != "Success"){
+        ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing map.", dir.generic_string().c_str(), error_code.message().c_str());
+        return;
+      }
     }
 
     // Below creates time-based subfolder.
@@ -171,8 +175,11 @@ public:
 
 
     if (!boost::filesystem::create_directory(dir, error_code)){
-      ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing map.", dir.generic_string().c_str(), error_code.message().c_str());
-      return;
+      // @TODO: Find a way to do this without ugly String comparison
+      if (error_code.message() != "Success"){
+        ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing map.", dir.generic_string().c_str(), error_code.message().c_str());
+        return;
+      }
     }
 
 

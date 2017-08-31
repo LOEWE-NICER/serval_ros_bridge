@@ -101,8 +101,11 @@ void ImageToServal::writeLatestImageToFile()
 
     boost::system::error_code error_code;
     if (!boost::filesystem::create_directory(dir, error_code)){
-      ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing image.", dir.generic_string().c_str(), error_code.message().c_str());
-      return;
+      // @TODO: Find a way to do this without ugly String comparison
+      if (error_code.message() != "Success"){
+        ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing image.", dir.generic_string().c_str(), error_code.message().c_str());
+        return;
+      }
     }
 
     // Below creates time-based subfolder.
@@ -112,8 +115,11 @@ void ImageToServal::writeLatestImageToFile()
     ROS_DEBUG_STREAM(dir.generic_string());
 
     if (!boost::filesystem::create_directory(dir, error_code)){
-      ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing image.", dir.generic_string().c_str(), error_code.message().c_str());
-      return;
+      // @TODO: Find a way to do this without ugly String comparison
+      if (error_code.message() != "Success"){
+        ROS_ERROR("Could not create folder %s, error_code message: %s. Aborting writing image.", dir.generic_string().c_str(), error_code.message().c_str());
+        return;
+      }
     }
 
     std::string full_file_path_and_name = dir.generic_string() + "/" + p_image_name_;
