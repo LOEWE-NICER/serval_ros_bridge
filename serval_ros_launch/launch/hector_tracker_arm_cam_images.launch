@@ -10,7 +10,7 @@
     <arg name="nodelet_manager_name" value="/arm_thermal_cam_nodelet_manager" />  
     <arg name="node_name" value="thermal_image_serval_nodelet_loader" />
     <arg name="image_topic" value="/arm_thermal_cam/image_mapped" />
-    <arg name="image_name" value="image_thermal.png" />
+    <arg name="image_name" value="image_thermal.jpg" />
     <arg name="save_folder" value="$(arg save_folder)"/>
     <arg name="save_sub_folder" value="$(arg save_sub_folder)/$(arg agent_name)_image_thermal" />
   </include>
@@ -20,7 +20,7 @@
     <arg name="node_name" value="arg_rgbd_rgb_image_serval_nodelet_loader" />
     <arg name="image_topic" value="/arm_rgbd_cam/rgb/image_rect_color" />
     <arg name="rotate_image_deg" value="-90" />
-    <arg name="image_name" value="image_color.png" />
+    <arg name="image_name" value="image_color.jpg" />
     <arg name="save_folder" value="$(arg save_folder)"/>
     <arg name="save_sub_folder" value="$(arg save_sub_folder)/$(arg agent_name)_image_rgb" />
   </include>
