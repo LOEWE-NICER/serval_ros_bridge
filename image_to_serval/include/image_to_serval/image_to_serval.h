@@ -39,6 +39,7 @@ private:
     
     std::string p_save_folder_;
     std::string p_save_sub_folder_;
+    std::string p_remote_save_folder_;
     std::string p_add_script_executable_name_;
     std::string p_scripts_folder_;
     std::string p_image_name_;

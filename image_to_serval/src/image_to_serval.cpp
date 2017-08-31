@@ -39,6 +39,7 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
     p_n.param("save_folder", p_save_folder_, std::string("UNSET"));
     p_n.param("save_sub_folder", p_save_sub_folder_, std::string(""));
+    p_n.param("remote_save_folder", p_remote_save_folder_, std::string("/home/pi/"));
     p_n.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     p_n.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));    
     p_n.param("image_name", p_image_name_, std::string("default_image.jpg"));
@@ -123,6 +124,7 @@ void ImageToServal::writeLatestImageToFile()
     }
 
     std::string full_file_path_and_name = dir.generic_string() + "/" + p_image_name_;
+    std::string remote_full_file_path_and_name = p_remote_save_folder_ + "/" + filename_ss_.str();
 
     if (rotate_flag_!= -1){
       cv::Mat tmp;
@@ -147,7 +149,7 @@ void ImageToServal::writeLatestImageToFile()
     std_msgs::String serval_update_str;
     std::stringstream serval_update_ss;
 
-    serval_update_ss << "CREATE_FILE;" << filename_ss_.str() << ";filename=" << p_image_name_ << ";timestamp=" << last_img_->header.stamp.toSec(); // << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
+    serval_update_ss << "CREATE_FILE;" << remote_full_file_path_and_name << ";filename=" << p_image_name_ << ";timestamp=" << last_img_->header.stamp.toSec(); // << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
 
     if (pose_ptr_.get()){
       serval_update_ss << ";pose_x=" << pose_ptr_->pose.position.x << ";pose_y=" << pose_ptr_->pose.position.y << ";pose_z=" << pose_ptr_->pose.position.z;
