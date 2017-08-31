@@ -63,6 +63,7 @@ public:
   {
     pn_.param("save_folder", p_save_folder_, std::string("UNSET"));
     pn_.param("save_sub_folder", p_save_sub_folder_, std::string(""));
+    pn_.param("remote_save_folder", p_remote_save_folder_, std::string("/home/pi/"));
     pn_.param("scripts_folder", p_scripts_folder_, std::string("UNSET"));
     pn_.param("add_script_executable_name", p_add_script_executable_name_, std::string("/s_addfolder "));
     pn_.param("agent_name", p_agent_name_, std::string("ugv001"));
@@ -187,6 +188,7 @@ public:
     //boost::filesystem::create_directory(dir);
 
     std::string full_file_path_and_name = dir.generic_string() + "/" + p_map_name_;
+    std::string remote_full_file_path_and_name = p_remote_save_folder_ + "/" + filename_ss_.str();
 
 
     // Only if someone is subscribed to it, do work and publish full map image
@@ -287,7 +289,7 @@ public:
       std_msgs::String serval_update_str;
       std::stringstream serval_update_ss;
 
-      serval_update_ss << "UPDATE_FILE;" << dir.generic_string() << ";filename=" << p_map_name_ << ".png" << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
+      serval_update_ss << "UPDATE_FILE;" << remote_full_file_path_and_name << ";filename=" << p_map_name_ << ".png" << ";map_resolution=" << map->info.resolution << ";map_origin_pos_x=" << map->info.origin.position.x << ";map_origin_pos_y=" << map->info.origin.position.y;
       serval_update_str.data = serval_update_ss.str();
 
       serval_update_pub_.publish(serval_update_str);
@@ -421,6 +423,7 @@ public:
   HectorMapTools::CoordinateTransformer<float> world_map_transformer_;
 
   std::string p_save_folder_;
+  std::string p_remote_save_folder_;
   std::string p_save_sub_folder_;
   std::string p_add_script_executable_name_;
   std::string p_scripts_folder_;
