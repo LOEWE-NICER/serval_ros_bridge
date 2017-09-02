@@ -31,6 +31,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
+
 namespace serval_ros_bridge{
 
 ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
@@ -65,6 +66,7 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
     //ROS_INFO("Debug %s", filename_ss_.str().c_str());
 
     pose_sub_ = n_.subscribe("robot_pose", 1, &ImageToServal::poseCallback, this);
+    nav_sat_fix_sub_ = n_.subscribe("/gps_calibration/gps/fix", 1, &ImageToServal::navSatFixCallback, this);
 
     serval_update_pub_ = n_.advertise<std_msgs::String>("/serval_update", 10, false);
   
@@ -136,15 +138,23 @@ void ImageToServal::writeLatestImageToFile()
 
     ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
 
-    //std::stringstream sys_command;
-    
-    //sys_command << p_scripts_folder_ << p_add_script_executable_name_ << " " << dir.generic_string();
+    if (nav_sat_fix_ptr_){
 
-    //if (system(sys_command.str().c_str()) < 0){
-    //  ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
-    //}else{
-    //  ROS_INFO("Successfully used system call: %s", sys_command.str().c_str());
-    //}
+      std::stringstream sys_command;
+      // See https://www.sno.phy.queensu.ca/~phil/exiftool/faq.html#Q14
+      // http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/gps.html
+      sys_command << "exiftool -exif:gpslatitude " << nav_sat_fix_ptr_->latitude << " -exif:gpslatituderef=N -exif:gpslongitude "
+                  << nav_sat_fix_ptr_->longitude << " -exif:gpslongituderef=W  -exif:gpsaltitude "
+                  << nav_sat_fix_ptr_->altitude <<  " -exif:gpsAltituderef=0 " << full_file_path_and_name.c_str();
+
+      if (system(sys_command.str().c_str()) < 0){
+        ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
+      }else{
+        ROS_INFO("Successfully used system call: %s", sys_command.str().c_str());
+      }
+    }else{
+      ROS_WARN("No navsatfix available!");
+    }
 
     std_msgs::String serval_update_str;
     std::stringstream serval_update_ss;
@@ -180,6 +190,13 @@ void ImageToServal::poseCallback(const geometry_msgs::PoseStampedConstPtr& pose)
 {
   pose_ptr_ = pose;
 }
+
+
+void ImageToServal::navSatFixCallback(const sensor_msgs::NavSatFixConstPtr& nav_sat_fix)
+{
+  nav_sat_fix_ptr_ = nav_sat_fix;
+}
+
 
 
 }

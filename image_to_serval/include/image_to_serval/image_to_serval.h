@@ -9,6 +9,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <sensor_msgs/image_encodings.h>
 #include <topic_tools/shape_shifter.h>
+#include <sensor_msgs/NavSatFix.h>
 
 
 namespace serval_ros_bridge{
@@ -22,6 +23,7 @@ private:
     void trigger_subscriber(const boost::shared_ptr<const topic_tools::ShapeShifter> &message);
 
     void poseCallback(const geometry_msgs::PoseStampedConstPtr& pose);
+    void navSatFixCallback(const sensor_msgs::NavSatFixConstPtr& nav_sat_fix);
 
     //void mappingCallback(const thermaleye_msgs::Mapping& mapping);
 
@@ -30,12 +32,14 @@ private:
     ros::Subscriber trigger_subscriber_;
 
     ros::Subscriber pose_sub_;
+    ros::Subscriber nav_sat_fix_sub_;
 
     ros::Publisher serval_update_pub_;
 
     sensor_msgs::ImageConstPtr last_img_;
 
     geometry_msgs::PoseStampedConstPtr pose_ptr_;
+    sensor_msgs::NavSatFixConstPtr nav_sat_fix_ptr_;
     
     std::string p_save_folder_;
     std::string p_save_sub_folder_;
