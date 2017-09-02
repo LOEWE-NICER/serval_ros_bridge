@@ -143,9 +143,9 @@ void ImageToServal::writeLatestImageToFile()
       std::stringstream sys_command;
       // See https://www.sno.phy.queensu.ca/~phil/exiftool/faq.html#Q14
       // http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/gps.html
-      sys_command << "exiftool -exif:gpslatitude " << nav_sat_fix_ptr_->latitude << " -exif:gpslatituderef=N -exif:gpslongitude "
-                  << nav_sat_fix_ptr_->longitude << " -exif:gpslongituderef=W  -exif:gpsaltitude "
-                  << nav_sat_fix_ptr_->altitude <<  " -exif:gpsAltituderef=0 " << full_file_path_and_name.c_str();
+      sys_command << "exiftool -exif:gpslatitude=" << nav_sat_fix_ptr_->latitude << " -exif:gpslatituderef=N -exif:gpslongitude="
+                  << nav_sat_fix_ptr_->longitude << " -exif:gpslongituderef=W  -exif:gpsaltitude="
+                  << nav_sat_fix_ptr_->altitude <<  " -exif:gpsaltituderef=0 " << full_file_path_and_name.c_str();
 
       if (system(sys_command.str().c_str()) < 0){
         ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
