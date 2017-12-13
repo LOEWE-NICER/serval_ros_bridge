@@ -40,6 +40,8 @@ private:
 
     geometry_msgs::PoseStampedConstPtr pose_ptr_;
     sensor_msgs::NavSatFixConstPtr nav_sat_fix_ptr_;
+
+    bool exiftool_available_;
     
     std::string p_save_folder_;
     std::string p_save_sub_folder_;

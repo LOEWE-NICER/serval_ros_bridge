@@ -34,7 +34,7 @@
 
 namespace serval_ros_bridge{
 
-ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
+ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){  
 
     rotate_flag_ = -1;
 
@@ -75,6 +75,15 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
     sub_ = p_it.subscribe("image", 1, &ImageToServal::imageCallback,this);
 
     trigger_subscriber_ = p_n.subscribe<topic_tools::ShapeShifter>("trigger_topic", 1, &ImageToServal::trigger_subscriber, this);
+
+    //check if exiftool exists
+    if (system("exiftool -ver &>/dev/null") != 0) {
+      ROS_ERROR_STREAM("exiftool not found. geotagging images will be disabled" << std::endl);
+      ROS_ERROR_STREAM("On Ubuntu, use 'sudo apt-get install libimage-exiftool-perl' to install");
+      exiftool_available_ = false;
+    }else{
+      exiftool_available_ = true;
+    }
 
 }
 
@@ -138,22 +147,26 @@ void ImageToServal::writeLatestImageToFile()
 
     ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
 
-    if (nav_sat_fix_ptr_){
+    if (exiftool_available_){
+      if (nav_sat_fix_ptr_){
 
-      std::stringstream sys_command;
-      // See https://www.sno.phy.queensu.ca/~phil/exiftool/faq.html#Q14
-      // http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/gps.html
-      sys_command << "exiftool -exif:gpslatitude=" << nav_sat_fix_ptr_->latitude << " -exif:gpslatituderef=N -exif:gpslongitude="
-                  << nav_sat_fix_ptr_->longitude << " -exif:gpslongituderef=E  -exif:gpsaltitude="
-                  << nav_sat_fix_ptr_->altitude <<  " -exif:gpsaltituderef=above " << full_file_path_and_name.c_str();
+        std::stringstream sys_command;
+        // See https://www.sno.phy.queensu.ca/~phil/exiftool/faq.html#Q14
+        // http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/gps.html
+        sys_command << "exiftool -exif:gpslatitude=" << nav_sat_fix_ptr_->latitude << " -exif:gpslatituderef=N -exif:gpslongitude="
+                    << nav_sat_fix_ptr_->longitude << " -exif:gpslongituderef=E  -exif:gpsaltitude="
+                    << nav_sat_fix_ptr_->altitude <<  " -exif:gpsaltituderef=above " << full_file_path_and_name.c_str();
 
-      if (system(sys_command.str().c_str()) < 0){
-        ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
+        if (system(sys_command.str().c_str()) < 0){
+          ROS_ERROR("Failed to use system call: %s", sys_command.str().c_str());
+        }else{
+          ROS_INFO("Successfully used system call: %s", sys_command.str().c_str());
+        }
       }else{
-        ROS_INFO("Successfully used system call: %s", sys_command.str().c_str());
+        ROS_WARN("No navsatfix available!");
       }
     }else{
-      ROS_WARN("No navsatfix available!");
+      ROS_WARN("Not adding geotag information as exiftool is not available!");
     }
 
     std_msgs::String serval_update_str;
