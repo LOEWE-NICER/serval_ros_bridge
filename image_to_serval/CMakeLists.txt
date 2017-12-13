@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   sensor_msgs
   topic_tools
   nodelet
+  exiftool_ros
 )
 
 include_directories(
@@ -21,7 +22,7 @@ include_directories(
 catkin_package(
   INCLUDE_DIRS  ${catkin_INCLUDE_DIRS}
 #  LIBRARIES task_msgs
-   CATKIN_DEPENDS   cv_bridge image_transport roscpp sensor_msgs topic_tools nodelet
+   CATKIN_DEPENDS   cv_bridge image_transport roscpp sensor_msgs topic_tools nodelet exiftool_ros
 #  DEPENDS system_lib
 )
 

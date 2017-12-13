@@ -10,6 +10,7 @@
 #include <sensor_msgs/image_encodings.h>
 #include <topic_tools/shape_shifter.h>
 #include <sensor_msgs/NavSatFix.h>
+#include <exiftool_ros/exiftool_ros.h>
 
 
 namespace serval_ros_bridge{
@@ -41,7 +42,7 @@ private:
     geometry_msgs::PoseStampedConstPtr pose_ptr_;
     sensor_msgs::NavSatFixConstPtr nav_sat_fix_ptr_;
 
-    bool exiftool_available_;
+    boost::shared_ptr<exiftool_ros::ExifTool> exiftool_;
     
     std::string p_save_folder_;
     std::string p_save_sub_folder_;

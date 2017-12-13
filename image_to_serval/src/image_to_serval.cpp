@@ -32,6 +32,8 @@
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 
 
+
+
 namespace serval_ros_bridge{
 
 ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){  
@@ -76,14 +78,7 @@ ImageToServal::ImageToServal(ros::NodeHandle& n,ros::NodeHandle& p_n){
 
     trigger_subscriber_ = p_n.subscribe<topic_tools::ShapeShifter>("trigger_topic", 1, &ImageToServal::trigger_subscriber, this);
 
-    //check if exiftool exists
-    if (system("exiftool -ver &>/dev/null") != 0) {
-      ROS_ERROR_STREAM("exiftool not found. geotagging images will be disabled" << std::endl);
-      ROS_ERROR_STREAM("On Ubuntu, use 'sudo apt-get install libimage-exiftool-perl' to install");
-      exiftool_available_ = false;
-    }else{
-      exiftool_available_ = true;
-    }
+    exiftool_.reset(new exiftool_ros::ExifTool());
 
 }
 
@@ -147,6 +142,9 @@ void ImageToServal::writeLatestImageToFile()
 
     ROS_INFO("Wrote image to %s", full_file_path_and_name.c_str());
 
+    exiftool_->writeGpsData(full_file_path_and_name, nav_sat_fix_ptr_);
+
+    /*
     if (exiftool_available_){
       if (nav_sat_fix_ptr_){
 
@@ -168,6 +166,7 @@ void ImageToServal::writeLatestImageToFile()
     }else{
       ROS_WARN("Not adding geotag information as exiftool is not available!");
     }
+    */
 
     std_msgs::String serval_update_str;
     std::stringstream serval_update_ss;
